@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-bottom: 24px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 420px;          /* card width fix */
+        background: #ffffff;
+        border-radius: 28px;
+        box-shadow: 0 22px 60px rgba(15, 23, 42, 0.45);
+        padding: 32px 26px 26px;
+        box-sizing: border-box;
+        text-align: left;
+    }
+
+    .login-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #ede9fe, #e0f2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+        box-shadow: 0 16px 36px rgba(79,70,229,0.45);
+    }
+    .login-icon i {
+        font-size: 22px;
+        color: #4f46e5;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .login-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .login-header p {
+        margin: 6px 0 0;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .login-form {
+        margin-top: 4px;
+    }
+
+    .field-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .field-label i {
+        color: #6366f1;
+        font-size: 13px;
+    }
+
+    .field {
+        margin-bottom: 14px;
+    }
+
+    .input-shell input[type="text"],
+    .input-shell input[type="password"] {
+        width: 100%;
+        height: 46px;
+        border-radius: 14px;
+        border: 1px solid #e5e7eb;
+        padding: 0 14px;
+        font-size: 13px;
+        outline: none;
+        transition: all 0.18s ease;
+        box-sizing: border-box;
+        background-color: #f3f4ff;
+    }
+
+    .input-shell input:focus {
+        border-color: #6366f1;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.22);
+    }
+
+    .login-button {
+        width: 100%;
+        height: 48px;
+        border-radius: 999px;
+        border: none;
+        outline: none;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 6px;
+        margin-bottom: 8px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+        box-shadow: 0 18px 32px rgba(79,70,229,0.50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .login-button i {
+        font-size: 15px;
+    }
+
+    .login-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 22px 40px rgba(79,70,229,0.55);
+        opacity: 0.98;
+    }
+
+    .login-button:active {
+        transform: translateY(0);
+        box-shadow: 0 12px 24px rgba(79,70,229,0.40);
+    }
+
+    .login-footer {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #6b7280;
+        text-align: center;
+    }
+
+    .login-footer a {
+        color: #4f46e5;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .error {
+        margin-top: 6px;
+        padding: 7px 9px;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #b91c1c;
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+    }
+
+    @media (max-width: 480px) {
+        .login-card {
+            max-width: 360px;
+            padding: 26px 18px 20px;
+            border-radius: 22px;
+        }
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <div class="login-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+
+        <div class="login-header">
+            <h2>Apartment Login</h2>
+            <p>Owner creates login IDs and passwords for tenants.</p>
+        </div>
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            <div class="field">
+                <div class="field-label">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Login ID</span>
+                </div>
+                <div class="input-shell">
+                    <input id="id_username" type="text" name="username" autocomplete="username"
+                           required placeholder="Enter your login ID">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="field-label">
+                    <i class="fas fa-lock"></i>
+                    <span>Password</span>
+                </div>
+                <div class="input-shell">
+                    <input id="id_password" type="password" name="password" autocomplete="current-password"
+                           required placeholder="Enter your password">
+                </div>
+            </div>
+
+            <button type="submit" class="login-button">
+                <span>LOGIN</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+        </form>
+
+        <div class="login-footer">
+            Need an account?
+            <a href="#">Contact your building owner/manager</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

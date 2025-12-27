@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 20px auto;">
+    <h2 style="margin-bottom: 4px;">{{ tenant.name }} – Room {{ tenant.room_no }}</h2>
+    <p style="margin-top: 0; color:#6b7280; font-size:0.9rem;">
+        Add / Edit Monthly Rent & Electricity Bill
+    </p>
+
+    <form method="post" style="margin-top: 16px;">
+        {% csrf_token %}
+
+        <div style="display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+            <!-- Month -->
+            <div>
+                <label style="font-size:0.85rem;">Month (e.g. APRIL 2025)</label>
+                <input type="text" name="month" required
+                       placeholder="APRIL 2025"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+            </div>
+
+            <!-- Date -->
+            <div>
+                <label style="font-size:0.85rem;">Rent Date</label>
+                <input type="date" name="date"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label style="font-size:0.85rem;">Status</label>
+                <select name="status"
+                        style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+                    <option value="Pending">Pending</option>
+                    <option value="Paid">Paid</option>
+                </select>
+            </div>
+
+            <!-- Rent Amount -->
+            <div>
+                <label style="font-size:0.85rem;">Rent Amount</label>
+                <input type="number" step="0.01" name="rent_amount"
+                       placeholder="{{ tenant.base_rent|default:'0.00' }}"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+                <small style="font-size:0.75rem; color:#9ca3af;">
+                    Blank chhodoge to default base rent use hoga.
+                </small>
+            </div>
+
+            <!-- Open Date -->
+            <div>
+                <label style="font-size:0.85rem;">Open Date</label>
+                <input type="date" name="open_date"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+            </div>
+
+            <!-- Submit Date -->
+            <div>
+                <label style="font-size:0.85rem;">Submit Date</label>
+                <input type="date" name="submit_date"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+                <small style="font-size:0.75rem; color:#9ca3af;">
+                    Agar status "Paid" aur ye blank ho to system auto set karega.
+                </small>
+            </div>
+
+            <!-- Open Unit -->
+            <div>
+                <label style="font-size:0.85rem;">Open Unit</label>
+                <input type="number" name="open_unit"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+            </div>
+
+            <!-- Close Unit -->
+            <div>
+                <label style="font-size:0.85rem;">Close Unit</label>
+                <input type="number" name="close_unit"
+                       style="width:100%; padding:6px; border-radius:4px; border:1px solid #d1d5db;">
+                <small style="font-size:0.75rem; color:#9ca3af;">
+                    Units used & bill amount auto calculate honge.
+                </small>
+            </div>
+        </div>
+
+        <div style="margin-top: 18px; display:flex; justify-content:space-between; align-items:center;">
+            <a href="{% url 'owner_tenant_detail' tenant.id %}" class="btn btn-secondary">
+                ← Back to Tenant Detail
+            </a>
+            <button type="submit" class="btn">
+                Save Rent & Bill
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

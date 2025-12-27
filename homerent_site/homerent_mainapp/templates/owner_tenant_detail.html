@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .tenant-summary-card {
+        border-radius: 20px;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.10);
+        padding: 18px 22px;
+        background: #ffffff;
+        margin-bottom: 16px;
+    }
+
+    .tenant-summary-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .tenant-summary-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background: #8b5cf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 20px;
+    }
+
+    .tenant-summary-heading {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .tenant-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 30px;
+        font-size: 0.9rem;
+    }
+
+    .tenant-summary-item .label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 2px;
+    }
+
+    .tenant-summary-item .label i {
+        font-size: 0.85rem;
+        color: #a855f7;
+    }
+
+    .tenant-summary-item .value {
+        color: #374151;
+        font-weight: 600;
+    }
+
+    .tenant-summary-item .value.highlight {
+        color: #4c1d95;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .tenant-summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* rent card headings */
+    .rent-card-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #111827;
+    }
+</style>
+
+<!-- TOP TENANT INFO CARD (redesigned) -->
+<div class="card tenant-summary-card">
+    <div class="tenant-summary-top">
+        <div class="tenant-summary-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div>
+            <div class="tenant-summary-heading">
+                Tenant: {{ tenant.name }} (Room {{ tenant.room_no }})
+            </div>
+        </div>
+    </div>
+
+    <div class="tenant-summary-grid">
+        <div class="tenant-summary-item">
+            <div class="label">
+                <i class="fas fa-phone-alt"></i>
+                Mobile
+            </div>
+            <div class="value">
+                {{ tenant.mobile1 }}{% if tenant.mobile2 %} / {{ tenant.mobile2 }}{% endif %}
+            </div>
+        </div>
+
+        <div class="tenant-summary-item">
+            <div class="label">
+                <i class="fas fa-map-marker-alt"></i>
+                Address
+            </div>
+            <div class="value">
+                {{ tenant.address }}
+            </div>
+        </div>
+
+        <div class="tenant-summary-item">
+            <div class="label">
+                <i class="fas fa-calendar-alt"></i>
+                Opening Date
+            </div>
+            <div class="value">
+                {{ tenant.joining_date|date:"M d, Y" }}
+            </div>
+        </div>
+
+        <div class="tenant-summary-item">
+            <div class="label">
+                <i class="fas fa-bolt"></i>
+                Opening Unit
+            </div>
+            <div class="value">
+                {{ tenant.open_unit }}
+            </div>
+        </div>
+
+        <div class="tenant-summary-item">
+            <div class="label">
+                <i class="fas fa-wallet"></i>
+                Advance
+            </div>
+            <div class="value highlight">
+                ₹{{ tenant.advance }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RENT & UNIT HISTORY CARD (tumhara hi logic) -->
+<div class="card">
+    <h3 class="rent-card-title">Rent &amp; Unit History</h3>
+    <table>
+        <tr>
+            <th>Month</th>
+            <th>Date</th>
+            <th>Open Unit</th>
+            <th>Close Unit</th>
+            <th>Units Used</th>
+            <th>Rent (₹)</th>
+            <th>Bill (₹)</th>
+            <th>Total (₹)</th>
+            <th>Status</th>
+            <th>Paid On</th>
+        </tr>
+        {% for r in rents %}
+        <tr>
+            <td>{{ r.month }}</td>
+            <td>{{ r.rent_date }}</td>
+            <td>{{ r.open_unit }}</td>
+            <td>{{ r.close_unit }}</td>
+            <td>{{ r.units_used }}</td>
+            <td>{{ r.base_rent_amount }}</td>
+            <td>{{ r.bill_amount }}</td>
+            <td>{{ r.total_amount }}</td>
+            <td>{{ r.status }}</td>
+            <td>
+                {% if r.paid_date %}
+                    {{ r.paid_date|date:"d-M-Y" }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p style="margin-top:16px;">
+        <strong>Total Rent:</strong> ₹{{ total_rent }}<br>
+        <strong>Total Bill:</strong> ₹{{ total_bill }}<br>
+        <strong>Total Paid:</strong> ₹{{ total_paid }}
+    </p>
+</div>
+
+{% endblock %}

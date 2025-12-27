@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .pay-shell {
+        max-width: 720px;
+        margin: 24px auto;
+        padding: 28px 32px 32px;
+        border-radius: 28px;
+        background: #ffffff;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.16);
+    }
+    .pay-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #111827;
+        margin: 0 0 4px;
+    }
+    .pay-sub {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 18px;
+    }
+    .pay-sub span i {
+        margin-right: 4px;
+        color: #a855f7;
+    }
+    .step-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 8px;
+    }
+    .step-chip {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: #4f46e5;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+    .step-label {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #111827;
+    }
+
+    /* generic amount/bill card */
+    .amount-card {
+        background: #f9fafb;
+        border-radius: 18px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+    }
+    .amount-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 0.95rem;
+        color: #374151;
+    }
+    .amount-row span:first-child {
+        color: #9ca3af;
+    }
+    .amount-row.units span:last-child {
+        color: #f97316;
+        font-weight: 600;
+    }
+    .amount-row.total {
+        padding-top: 10px;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 4px;
+        font-weight: 700;
+    }
+    .amount-row.total span:last-child {
+        color: #4f46e5;
+    }
+
+    .qr-container {
+        text-align: center;
+        margin-top: 8px;
+    }
+    .qr-frame-outer {
+        display: inline-block;
+        border-radius: 20px;
+        padding: 10px;
+        border: 2px dashed #d1d5db;
+        background: #ffffff;
+    }
+    .qr-frame-inner {
+        border-radius: 18px;
+        padding: 10px 12px 8px;
+        background: #f97316;
+    }
+    .qr-header {
+        font-size: 0.86rem;
+        font-weight: 600;
+        background: #111827;
+        color: #ffffff;
+        padding: 4px 12px;
+        border-radius: 999px;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+    .qr-inner-white {
+        background: #ffffff;
+        padding: 10px;
+        border-radius: 12px;
+    }
+    .qr-merchant {
+        margin-top: 6px;
+        font-size: 0.8rem;
+        color: #1f2937;
+    }
+    #timer {
+        margin-top: 10px;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #111827;
+    }
+    .qr-note {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+
+    .pay-btn-wrap {
+        margin-top: 22px;
+    }
+
+    /* SUCCESS – bill style */
+    .success-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #16a34a;
+        margin-bottom: 14px;
+    }
+    .success-bill {
+        background: #f9fafb;
+        border-radius: 18px;
+        padding: 18px 22px;
+        margin-top: 6px;
+    }
+    .success-bill-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 0.96rem;
+        color: #111827;
+    }
+    .success-bill-row span:first-child {
+        color: #6b7280;
+    }
+    .success-bill-row.total {
+        padding-top: 10px;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 4px;
+        font-weight: 700;
+    }
+    .success-bill-row.total span:last-child {
+        color: #111827;
+    }
+    .success-bill-row.paidon span:first-child {
+        color: #9ca3af;
+    }
+    .success-btn-wrap {
+        margin-top: 22px;
+    }
+
+    @media (max-width: 768px) {
+        .pay-shell {
+            margin: 16px 10px;
+            padding: 20px 16px 22px;
+            border-radius: 22px;
+        }
+        .pay-title {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+
+<div class="pay-shell">
+
+    <h2 class="pay-title">
+        Payment: {{ rent.tenant.name }} - {{ rent.month }}
+    </h2>
+    <div class="pay-sub">
+        <span><i class="fas fa-door-open"></i>Room: {{ rent.tenant.room_no }}</span>
+        <span><i class="fas fa-bolt"></i>Unit Rate: ₹{{ rent.tenant.unit_rate }}/unit</span>
+    </div>
+
+    {% if success %}
+
+        <!-- BILL-LIKE SUCCESS VIEW -->
+        <div class="success-title">Payment Completed!</div>
+
+        <div class="success-bill">
+            <div class="success-bill-row">
+                <span>Rent</span>
+                <span>₹{{ rent.base_rent_amount|floatformat:2 }}</span>
+            </div>
+            <div class="success-bill-row">
+                <span>Units</span>
+                <span>{{ rent.units_used }} ({{ rent.open_unit }} → {{ rent.close_unit }})</span>
+            </div>
+            <div class="success-bill-row">
+                <span>Bill</span>
+                <span>₹{{ rent.bill_amount|floatformat:2 }}</span>
+            </div>
+            <div class="success-bill-row total">
+                <span>Total Paid</span>
+                <span>₹{{ rent.total_amount|floatformat:2 }}</span>
+            </div>
+            <div class="success-bill-row paidon">
+                <span>Paid On</span>
+                <span>{{ rent.paid_date }}</span>
+            </div>
+        </div>
+
+        <div class="success-btn-wrap">
+            <a href="{% url 'user_dashboard' %}" class="btn"
+               style="padding:10px 32px;border-radius:999px;">
+                Back to Dashboard
+            </a>
+        </div>
+
+    {% elif ask_units %}
+
+        <div class="step-row">
+            <div class="step-chip">1</div>
+            <div class="step-label">Enter Current Meter Reading</div>
+        </div>
+
+        <form method="post" style="margin-top: 10px;">
+            {% csrf_token %}
+            <input type="hidden" name="set_units" value="1">
+            <p style="font-size: 0.9rem; color: #4b5563;">
+                Open Unit: <strong>{{ rent.open_unit|default:0 }}</strong>
+            </p>
+            <label style="font-size: 0.85rem;">Close Unit (Current Reading)</label>
+            <input type="number" name="close_unit" required
+                   style="width: 100%; padding: 8px; border-radius: 8px;
+                          border: 1px solid #d1d5db; margin-bottom: 10px;">
+            <button type="submit" class="btn" style="width: 100%;">Save Units</button>
+        </form>
+
+    {% else %}
+
+        <div class="step-row">
+            <div class="step-chip">2</div>
+            <div class="step-label">Confirm &amp; Pay</div>
+        </div>
+
+        <div class="amount-card">
+            <div class="amount-row">
+                <span>Rent Amount</span>
+                <span>₹{{ rent.base_rent_amount|floatformat:2 }}</span>
+            </div>
+            <div class="amount-row">
+                <span>Open Unit</span>
+                <span>{{ rent.open_unit }}</span>
+            </div>
+            <div class="amount-row">
+                <span>Close Unit</span>
+                <span>{{ rent.close_unit }}</span>
+            </div>
+            <div class="amount-row units">
+                <span>Units Used</span>
+                <span>{{ rent.units_used }}</span>
+            </div>
+            <div class="amount-row">
+                <span>Bill Amount</span>
+                <span>₹{{ rent.bill_amount|floatformat:2 }}</span>
+            </div>
+            <div class="amount-row total">
+                <span>Total Payable</span>
+                <span>₹{{ payable|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        <div class="qr-container">
+            <div class="qr-frame-outer">
+                <div class="qr-frame-inner">
+                    <div class="qr-header">Scan &amp; Pay using any UPI app</div>
+                    <div class="qr-inner-white">
+                        <img src="{% static 'WhatsApp Image 2025-12-20 at 5.35.58 PM.jpeg' %}"
+                             alt="QR UPI Code"
+                             style="width: 210px; height: 210px; object-fit: cover;">
+                        <div class="qr-merchant">amzn0010884499@apl</div>
+                    </div>
+                </div>
+            </div>
+            <p class="qr-note">
+                Scanner se scan karein (3 minutes timeout)
+            </p>
+            <div id="timer">03:00</div>
+        </div>
+
+        <form method="post" class="pay-btn-wrap">
+            {% csrf_token %}
+            <input type="hidden" name="confirm_pay" value="1">
+            <button type="submit" class="btn" style="width: 100%;">
+                Mark as Paid ₹{{ payable }}
+            </button>
+        </form>
+
+        <script>
+            let timeLeft = 180;
+            const timer = document.getElementById('timer');
+            const interval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    alert('Time expired! Please restart payment process.');
+                    window.location.reload();
+                }
+                timeLeft--;
+            }, 1000);
+        </script>
+
+    {% endif %}
+</div>
+
+{% endblock %}
